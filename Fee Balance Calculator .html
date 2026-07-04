@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K.R. Mangalam University — Fee Balance Calculator</title>
+
+
+
+    <style>
+        /* Blue-modern theme: mobile-first */
+        :root {
+            --bg: #f3f7fb;
+            --card: #ffffff;
+            --text: #0b1a2b;
+            --muted: #556674;
+            --accent: #0b5cab;
+            --accent-2: #0957a6;
+            --success: #2f9e44;
+            --danger: #c53030;
+            --border: #e6eef8;
+            --radius: 14px;
+            --gap: 12px;
+            --base: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: var(--base);
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(180deg, var(--bg), #ffffff);
+            font-family: Inter, Segoe UI, system-ui, Arial, sans-serif;
+            color: var(--text);
+            -webkit-font-smoothing: antialiased
+        }
+
+        .container {
+            max-width: 920px;
+            margin: 22px auto;
+            padding: 20px;
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: 0 12px 36px rgba(9, 87, 166, .06);
+            border: 1px solid var(--border)
+        }
+
+        .header {
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            padding: 18px;
+            border-radius: 10px;
+            color: #fff;
+            text-align: center
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.35rem;
+            font-weight: 800
+        }
+
+        .header p {
+            margin: 6px 0 0;
+            font-size: .95rem;
+            opacity: .95
+        }
+
+        .subtle {
+            color: var(--muted);
+            text-align: center;
+            margin: 10px 0;
+            font-size: .95rem
+        }
+
+        .instructions {
+            max-width: 860px;
+            margin: 12px auto
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 8px
+        }
+
+        .info-card {
+            background: linear-gradient(180deg, #fbfeff, #fff);
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border)
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 8px 0
+        }
+
+        .controls>div {
+            flex: 1 1 220px;
+            min-width: 150px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px
+        }
+
+        label {
+            font-weight: 700;
+            color: var(--muted);
+            font-size: .95rem;
+        }
+
+        input[type=number],
+        input[type=text],
+        select {
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #fff;
+            font-size: 1rem
+        }
+
+        input::placeholder {
+            color: #9aa7b3
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 10px 30px rgba(9, 87, 166, .06);
+            border-color: var(--accent-2)
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 0;
+            background: var(--accent);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 800;
+            min-height: 44px
+        }
+
+        .btn.secondary {
+            background: #0b7285
+        }
+
+        .btn:active {
+            transform: translateY(1px)
+        }
+
+        .result {
+            margin-top: 14px;
+            background: linear-gradient(180deg, #f7fbff, #ffffff);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(9, 87, 166, .06);
+            min-height: 84px
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-weight: 800
+        }
+
+        .result-summary {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 12px
+        }
+
+        .summary-box {
+            min-width: 160px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: #fff;
+            border-left: 4px solid var(--accent);
+            text-align: center;
+            box-shadow: 0 10px 28px rgba(9, 87, 166, .04)
+        }
+
+        .summary-box small {
+            display: block;
+            color: var(--muted);
+            font-size: .85rem;
+        }
+
+        .result-list {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-radius: 10px;
+            background: transparent;
+            border: 1px solid rgba(15, 23, 42, .03);
+        }
+
+        .break-mobile {
+            display: inline;
+            white-space: nowrap;
+        }
+
+        .result-note {
+            margin-top: 10px;
+            text-align: center;
+            color: var(--muted);
+            font-size: .9rem;
+        }
+
+        .result-item.added {
+            background: #ecf9ee;
+            border-color: #cfead6;
+            color: var(--success)
+        }
+
+        .result-item.deduct {
+            background: #fff6f6;
+            border-color: #ffd6d6;
+            color: var(--danger)
+        }
+
+        .highlight-marks {
+            box-shadow: 0 8px 26px rgba(47, 158, 68, .06);
+            border-width: 2px;
+        }
+
+        .highlight-percentile {
+            box-shadow: 0 8px 26px rgba(179, 90, 0, .06);
+            border-width: 2px;
+        }
+
+        .pop {
+            animation: pop .75s cubic-bezier(.2, .9, .3, 1)
+        }
+
+        @keyframes pop {
+            0% {
+                transform: translateY(10px) scale(.98);
+                opacity: 0;
+            }
+
+            60% {
+                transform: translateY(-6px) scale(1.03);
+                opacity: 1
+            }
+
+            100% {
+                transform: none;
+                opacity: 1
+            }
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(2, 6, 23, .65);
+            z-index: 40;
+            padding: 16px
+        }
+
+        .modal-backdrop.active {
+            display: flex
+        }
+
+        .modal {
+            background: #fff;
+            padding: 18px;
+            border-radius: 12px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center
+        }
+
+        .modal h2 {
+            margin: 0 0 8px
+        }
+
+        .modal p {
+            color: var(--muted);
+            margin: 0 0 12px
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 8px
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0
+        }
+
+        @media (max-width:720px) {
+            .container {
+                padding: 14px
+            }
+
+            .controls>div {
+                min-width: 100%;
+            }
+
+            .summary-box {
+                min-width: 120px;
+            }
+        }
+
+        @media (max-width:420px) {
+            html {
+                font-size: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.05rem;
+            }
+
+            .btn {
+                padding: 12px;
+            }
+
+            .result {
+                padding: 12px;
+            }
+
+            .break-mobile {
+                display: block;
+                margin-top: 4px;
+                white-space: normal;
+            }
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                color: #111
+            }
+
+            .controls,
+            .btn,
+            .modal-backdrop,
+            .modal {
+                display: none !important
+            }
+
+            .container {
+                box-shadow: none;
+                border: none;
+                padding: 6mm;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            @page {
+                size: A4;
+                margin: 8mm
+            }
+        }
+    </style>
+
+    <!-- Removed html2canvas and jsPDF includes — keeping page minimal for Fee Calculator -->
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>K.R. Mangalam University</h1>
+            
+        </div>
+
+
+
+
+        <!-- CUET scholarship calculator removed. Fee Balance Calculator remains below. -->
+
+        <div class="instructions info-card">
+            <div class="section-title">Fee Balance Calculator</div>
+           
+            <form id="feeForm">
+                <div class="controls">
+                    <div style="flex:1 1 220px; min-width:180px;">
+                        <label for="totalFee">Total Programme Fee</label>
+                        <input type="number" id="totalFee" placeholder="Enter total fee" min="0" step="0.01">
+                    </div>
+                    <div style="flex:1 1 220px; min-width:180px;">
+                        <label for="scholarshipPercent">Scholarship %</label>
+                        <input type="number" id="scholarshipPercent" placeholder="Enter scholarship %" min="0" max="100"
+                            step="0.01">
+                    </div>
+                    <div style="flex:1 1 220px; min-width:180px;">
+                        <label for="prePayment">Pre Payment</label>
+                        <input type="number" id="prePayment" placeholder="Enter pre payment" min="0" step="0.01">
+                    </div>
+                    <div style="flex:1 1 220px; min-width:180px;">
+                        <label for="securityDeposit">Security Deposit (Refundable)</label>
+                        <input type="number" id="securityDeposit" placeholder="10000" min="0" step="0.01" value="10000">
+                    </div>
+                </div>
+                <div class="controls">
+                    <div style="flex:1 1 220px; min-width:180px;">
+                        <button class="btn" id="calculateFeeBtn" type="submit">Calculate Fee Balance</button>
+                    </div>
+                    <div style="flex:1 1 220px; min-width:180px;">
+                        <button class="btn secondary" id="resetFeeBtn" type="button">Reset Fee</button>
+                    </div>
+                    <div style="flex:1 1 220px; min-width:180px;">
+                        <button class="btn secondary" id="exportBtn" type="button">Save / Print</button>
+                    </div>
+                </div>
+            </form>
+            <div class="result" id="feeResult">Enter total fee, scholarship % and prepayment to calculate balance.</div>
+        </div>
+
+        <div class="modal-backdrop" id="exportModal" aria-hidden="true">
+            <div class="modal" role="dialog" aria-modal="true" aria-labelledby="exportModalTitle">
+                <h2 id="exportModalTitle">Save or Print</h2>
+                <p>Select an action to save your result.</p>
+                <div class="modal-actions">
+                    <button class="btn" id="modalSavePdfBtn" type="button">Save as PDF</button>
+                    <button class="btn" id="modalSaveImageBtn" type="button">Save as Image</button>
+                    <button class="btn secondary" id="modalPrintBtn" type="button">Print</button>
+                </div>
+                <button class="btn secondary modal-close" id="closeModalBtn" type="button">Close</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function () {
+            const feeForm = document.getElementById('feeForm');
+            const totalFeeEl = document.getElementById('totalFee');
+            const scholarshipPercentEl = document.getElementById('scholarshipPercent');
+            const prePaymentEl = document.getElementById('prePayment');
+            const securityDepositEl = document.getElementById('securityDeposit');
+            const feeResultEl = document.getElementById('feeResult');
+
+            function setFeeResult(html, variant) {
+                feeResultEl.classList.remove('warning');
+                if (variant === 'warning') feeResultEl.classList.add('warning');
+                feeResultEl.innerHTML = html;
+            }
+
+            function formatAmount(value) {
+                const num = Number(value) || 0;
+                return num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
+            function calculateFeeBalance() {
+                const totalFee = parseFloat(totalFeeEl.value);
+                const scholarshipPercent = parseFloat(scholarshipPercentEl.value);
+                const prePayment = parseFloat(prePaymentEl.value) || 0;
+                const securityDeposit = parseFloat(securityDepositEl.value) || 0;
+
+                if (isNaN(totalFee) || isNaN(scholarshipPercent)) {
+                    setFeeResult('⚠ Please enter both Total Programme Fee and Scholarship Percentage.', 'warning');
+                    return;
+                }
+                if (totalFee < 0 || scholarshipPercent < 0 || scholarshipPercent > 100 || prePayment < 0) {
+                    setFeeResult('⚠ Please enter valid values. Scholarship percent must be between 0 and 100.', 'warning');
+                    return;
+                }
+
+                const scholarshipAmount = (totalFee * scholarshipPercent) / 100;
+                const semesterFee = totalFee / 2;
+                const scholarshipPerSemester = scholarshipAmount / 2;
+                const payableAmount = semesterFee - scholarshipPerSemester - prePayment + securityDeposit;
+
+                setFeeResult(
+                    `<div class="result-header">💰 <strong>Fee Balance Summary</strong></div>` +
+                    `<div class="result-summary">` +
+                    `<div class="summary-box"><small>Total Programme Fee</small><strong>${formatAmount(totalFee)}</strong></div>` +
+                    `<div class="summary-box deduct"><small>Scholarship Amount</small><strong>-${formatAmount(scholarshipAmount)}</strong></div>` +
+                    `</div>` +
+                    `<ul class="result-list">` +
+                    `<li class="result-item"><span>Semester Fee</span><strong>${formatAmount(semesterFee)}</strong></li>` +
+                    `<li class="result-item deduct"><span>Scholarship per Semester</span><strong>-${formatAmount(scholarshipPerSemester)}</strong></li>` +
+                    `<li class="result-item deduct"><span>Pre Payment</span><strong>-${formatAmount(prePayment)}</strong></li>` +
+                    `<li class="result-item added"><span>Security Deposit (Refundable)</span><strong>+${formatAmount(securityDeposit)}</strong></li>` +
+                    `<li class="result-item"><span>Payable Amount <span class="break-mobile">Semester 1</span></span><strong>${formatAmount(payableAmount)}</strong></li>` +
+                    `</ul>` +
+                    `<div class="result-note">Semester 2 due after scholarship: ${formatAmount(semesterFee - scholarshipPerSemester)}</div>`
+                );
+
+                // Animate highlights for added/deducted items
+                requestAnimationFrame(() => animateHighlights());
+            }
+
+            function animateHighlights() {
+                const added = feeResultEl.querySelectorAll('.result-item.added');
+                added.forEach(el => {
+                    el.classList.add('highlight-marks', 'pop');
+                    setTimeout(() => el.classList.remove('pop'), 900);
+                });
+
+                const deducts = feeResultEl.querySelectorAll('.result-item.deduct');
+                deducts.forEach(el => {
+                    el.classList.add('highlight-percentile', 'pop');
+                    setTimeout(() => el.classList.remove('pop'), 900);
+                });
+
+                // Also highlight summary boxes marked as deduct
+                const summaryDeducts = feeResultEl.querySelectorAll('.summary-box.deduct');
+                summaryDeducts.forEach(el => {
+                    el.classList.add('highlight-percentile', 'pop');
+                    setTimeout(() => el.classList.remove('pop'), 900);
+                });
+            }
+
+            feeForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                calculateFeeBalance();
+            });
+
+            document.getElementById('resetFeeBtn').addEventListener('click', function () {
+                totalFeeEl.value = '';
+                scholarshipPercentEl.value = '';
+                prePaymentEl.value = '';
+                securityDepositEl.value = '10000';
+                setFeeResult('Enter total fee, scholarship % and prepayment to calculate balance.');
+            });
+
+            // Minimal export handlers (safe offline stubs)
+            const exportBtn = document.getElementById('exportBtn');
+            const modal = document.getElementById('exportModal');
+            const modalSavePdfBtn = document.getElementById('modalSavePdfBtn');
+            const modalSaveImageBtn = document.getElementById('modalSaveImageBtn');
+            const modalPrintBtn = document.getElementById('modalPrintBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+
+            function printPage() { closeModal(); window.print(); }
+            function openModal() { modal && modal.classList.add('active'); modal && modal.setAttribute('aria-hidden','false'); }
+            function closeModal(){ modal && modal.classList.remove('active'); modal && modal.setAttribute('aria-hidden','true'); }
+
+            function loadHtml2Canvas() {
+                return new Promise((resolve, reject) => {
+                    if (window.html2canvas) return resolve(window.html2canvas);
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                    script.onload = () => resolve(window.html2canvas);
+                    script.onerror = () => reject(new Error('Failed to load html2canvas'));
+                    document.head.appendChild(script);
+                });
+            }
+
+            function loadJsPDF() {
+                return new Promise((resolve, reject) => {
+                    if (window.jspdf || window.jsPDF) return resolve(window.jspdf || window.jsPDF);
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                    script.onload = () => resolve(window.jspdf || window.jsPDF);
+                    script.onerror = () => reject(new Error('Failed to load jsPDF'));
+                    document.head.appendChild(script);
+                });
+            }
+
+            async function saveAsImage(){
+                try {
+                    await loadHtml2Canvas();
+                    const clone = document.querySelector('.container').cloneNode(true);
+                    clone.style.position = 'fixed';
+                    clone.style.left = '-9999px';
+                    clone.style.top = '0';
+                    clone.style.width = '900px';
+                    const ctrls = clone.querySelectorAll('.controls');
+                    ctrls.forEach(c => c.style.display = 'none');
+                    document.body.appendChild(clone);
+                    const canvas = await html2canvas(clone, { scale: 2, backgroundColor: '#ffffff' });
+                    document.body.removeChild(clone);
+                    const link = document.createElement('a');
+                    link.href = canvas.toDataURL('image/png');
+                    link.download = 'fee-result.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } catch (err) {
+                    console.error(err);
+                    alert('Image export failed. Make sure the page is loaded online and try again.');
+                }
+            }
+
+            async function saveAsPDF(){
+                try {
+                    await loadHtml2Canvas();
+                    await loadJsPDF();
+                    const clone = document.querySelector('.container').cloneNode(true);
+                    clone.style.position = 'fixed';
+                    clone.style.left = '-9999px';
+                    clone.style.top = '0';
+                    clone.style.width = '900px';
+                    const ctrls = clone.querySelectorAll('.controls');
+                    ctrls.forEach(c => c.style.display = 'none');
+                    document.body.appendChild(clone);
+                    const canvas = await html2canvas(clone, { scale: 2, backgroundColor: '#ffffff' });
+                    document.body.removeChild(clone);
+                    const pdfModule = window.jspdf || window.jsPDF || (window.jspdf = window.jspdf || {});
+                    let jsPDF = pdfModule.jsPDF || pdfModule.default || window.jsPDF || pdfModule;
+                    if (jsPDF && jsPDF.default) jsPDF = jsPDF.default;
+                    const pdf = new jsPDF({ unit: 'px', format: 'a4', orientation: 'portrait' });
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight();
+                    const ratio = Math.min(pdfWidth / canvas.width, pdfHeight / canvas.height);
+                    const imgWidth = canvas.width * ratio;
+                    const imgHeight = canvas.height * ratio;
+                    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                    pdf.save('fee-result.pdf');
+                } catch (err) {
+                    console.error(err);
+                    alert('PDF export failed. Make sure the page is loaded online and try again.');
+                }
+            }
+
+            // Wire buttons
+            exportBtn && exportBtn.addEventListener('click', openModal);
+            modalSavePdfBtn && modalSavePdfBtn.addEventListener('click', saveAsPDF);
+            modalSaveImageBtn && modalSaveImageBtn.addEventListener('click', saveAsImage);
+            modalPrintBtn && modalPrintBtn.addEventListener('click', printPage);
+            closeModalBtn && closeModalBtn.addEventListener('click', closeModal);
+            modal && modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+    }) ();
+    </script>
+</body>
+
+</html>
